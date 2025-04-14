@@ -65,9 +65,14 @@
         <div class="card confession-card mb-4 shadow">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
-                    <img src="{{ url_for('static', filename='svg/avatars/avatar' + confession.avatar_id|string + '.svg') }}" 
-                         alt="Avatar" class="avatar-img me-2">
-                    <span class="text-muted small">Anónimo · {{ confession.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                    <div class="avatar-container">
+                        <img src="{{ url_for('static', filename='img/avatars/' + confession.avatar_id|string + '.svg') }}" 
+                             alt="Avatar" class="avatar-img">
+                    </div>
+                    <div>
+                        <span class="fw-bold">Anónimo</span>
+                        <div class="confession-date">{{ confession.created_at.strftime('%d de %B, %Y • %H:%M') }}</div>
+                    </div>
                 </div>
                 
                 <div class="confession-actions">
@@ -146,11 +151,13 @@
                 <div class="comments-list">
                     {% for comment in comments %}
                     <div class="comment-item d-flex mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
-                        <img src="{{ url_for('static', filename='svg/avatars/avatar' + comment.avatar_id|string + '.svg') }}" 
-                             alt="Avatar" class="avatar-img-sm me-2 mt-1">
+                        <div class="avatar-container" style="width: 32px; height: 32px; margin-right: 10px;">
+                            <img src="{{ url_for('static', filename='img/avatars/' + comment.avatar_id|string + '.svg') }}" 
+                                 alt="Avatar" class="avatar-img-sm">
+                        </div>
                         <div class="flex-grow-1">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <small class="text-muted">Anónimo · {{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                <small class="text-muted">Anónimo · {{ comment.created_at.strftime('%d de %B, %Y • %H:%M') }}</small>
                                 
                                 {% if current_user.id == comment.user_id or current_user.is_admin %}
                                 <div class="dropdown">
