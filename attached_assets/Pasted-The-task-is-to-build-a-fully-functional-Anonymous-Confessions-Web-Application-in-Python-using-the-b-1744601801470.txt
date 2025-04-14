@@ -1,0 +1,79 @@
+The task is to build a fully-functional Anonymous Confessions Web Application in Python, using the best technologies available for backend and database integration. The application should be designed to be deployed on Render.com with a real database that persists all user data and updates correctly every time the application is updated.
+
+Important Note: The entire user interface and website will be in Spanish, including all text, buttons, and labels.
+
+Application Features:
+	1.	Login & Registration System:
+	•	Users should be able to sign up with a name, username, email, password, and password confirmation.
+	•	If the user does not have an account, they can register.
+	•	After registering, the system should securely store the user’s information in a real database and allow them to log in using their credentials.
+	2.	Anonymous Confessions Feature:
+	•	Once logged in, users should be able to post anonymous confessions.
+	•	Each confession should have an avatar randomly assigned to the user who posted it.
+	•	Confessions should not reveal any personal information about the user (except the avatar).
+	3.	Admin Panel:
+	•	An admin user should be created, with the ability to access an Admin Panel.
+	•	The admin should have the ability to view:
+	•	A list of all users, their registration date, last activity, email, etc.
+	•	The confessions posted by users, with the ability to view and manage them.
+	•	Admin credentials should be securely stored, and only the admin should have access to this panel.
+	4.	Database:
+	•	The application should use a real database (e.g., PostgreSQL), with all data (users, confessions, and comments) stored persistently. This means that even if the app is updated, the data should remain intact and the database should be automatically updated with the application.
+	5.	Commenting Feature:
+	•	Users should be able to comment on confessions anonymously.
+	•	All comments should be stored in the database and visible to other users.
+	•	Comments should be moderated to avoid inappropriate content.
+	6.	Design:
+	•	The CSS should be clean and modern, with smooth transitions and animations for interactivity.
+	•	The website should be fully responsive and optimized for both desktop and mobile views.
+	•	The login screen, confession display, and comment sections should all have high-quality, professional design with modern aesthetics.
+	•	The site should have a logo and clear branding.
+	7.	Technologies to Use:
+	•	Backend: Flask (Python framework for web development).
+	•	Database: PostgreSQL or SQLite for testing, to be connected with Flask using SQLAlchemy or Psycopg2.
+	•	Frontend: HTML, CSS (with Tailwind or Bootstrap), and JavaScript for dynamic content.
+	•	Deployment: The app should be ready for deployment on Render.com. All required files (like render.yaml, .env for environment variables, etc.) must be included.
+	•	Authentication: Flask-Login for session management.
+	8.	Real-Time Data Update:
+	•	Ensure that data is always up to date when the application is updated, and no user data is lost during deployment or updates.
+	9.	Additional Features:
+	•	Ability to mark confessions as favorites.
+	•	Users should be able to edit or delete their own confessions and comments.
+	•	Display statistics on user activity, such as the number of confessions posted or comments made.
+
+Deployment Instructions for Render:
+	1.	Build Command:
+	•	Use the following build command for Render: 
+pip install -r render_requirements.txt && chmod +x ./install_postgresql.sh && ./install_postgresql.sh
+
+	2.	Start Command:
+	•	The start command for the application:
+
+gunicorn main:app
+
+3.	Connect the Database:
+	•	In the Add Environment Variable section, Render will allow you to automatically add the DATABASE_URL variable for your database.
+	•	Select your database from the dropdown list.
+	•	This will automatically fill in the DATABASE_URL variable with the correct value.
+	4.	Add the SECRET_KEY Variable:
+	•	Click on Add Environment Variable.
+	•	Name: SECRET_KEY
+	•	Value: A long random string (you can use any online generator or create one yourself).
+	•	Example: sdf783hf8723hfoiu234hf892h3f892h3f8923hf
+	5.	Add Admin Variables (Optional):
+	•	ADMIN_USERNAME: admin (or any username you prefer)
+	•	ADMIN_PASSWORD: A secure password
+	•	ADMIN_EMAIL: Your email address
+	6.	Create the Web Service:
+	•	Click on Create Web Service.
+	•	Render will begin the deployment process.
+	•	You can monitor the progress on the page that appears.
+	7.	Check the Logs During Deployment:
+	•	Ensure that there are no errors during the installation process.
+	•	Verify that the database connection is established correctly.
+	•	Confirm that the init_admin.py script executes correctly to create the admin user.
+
+Requirements:
+	•	The application must be fully functional, secure, and ready to be deployed on Render.
+	•	It should follow best practices for authentication, database management, data security, and UI/UX design.
+	•	The entire user interface (UI) and content of the website will be in Spanish.
