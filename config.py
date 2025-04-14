@@ -18,7 +18,7 @@ class Config:
     
     # Admin credentials
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
-    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin1234')
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@confessiones.com')
     
     # Avatar options

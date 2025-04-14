@@ -19,7 +19,7 @@ def create_admin_user():
                 name="Administrador",
                 username=admin_username,
                 email=os.environ.get('ADMIN_EMAIL', 'admin@confessiones.com'),
-                password_hash=generate_password_hash(os.environ.get('ADMIN_PASSWORD', 'admin123')),
+                password_hash=generate_password_hash(os.environ.get('ADMIN_PASSWORD', 'admin1234')),
                 is_admin=True
             )
             db.session.add(admin)
