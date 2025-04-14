@@ -2,26 +2,273 @@
 
 {% block title %}Confesiones - Confesiones Anónimas{% endblock %}
 
+{% block styles %}
+<style>
+    .confession-form-card {
+        position: sticky;
+        top: 20px;
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        transition: var(--transition-bounce);
+    }
+    
+    .confession-form-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .confession-form-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: 1.25rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .confession-form-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+        transform: rotate(30deg);
+        pointer-events: none;
+    }
+    
+    .confession-textarea {
+        border: 2px solid var(--gray-light);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: var(--transition-normal);
+        font-family: 'Poppins', sans-serif;
+        resize: none;
+    }
+    
+    .confession-textarea:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.25rem rgba(114, 9, 183, 0.15);
+    }
+    
+    .post-confession-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        border: none;
+        padding: 0.75rem;
+        border-radius: var(--button-radius);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: var(--transition-bounce);
+    }
+    
+    .post-confession-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(114, 9, 183, 0.3);
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+    }
+    
+    .confessions-title {
+        position: relative;
+        margin-bottom: 2rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+    }
+    
+    .confessions-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        border-radius: 2px;
+    }
+    
+    .confession-container {
+        position: relative;
+    }
+    
+    .confession-card {
+        border-radius: var(--card-radius);
+        overflow: visible;
+        transition: var(--transition-bounce);
+        margin-bottom: 2rem;
+        border: none;
+    }
+    
+    .confession-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .avatar-container {
+        position: relative;
+        transition: var(--transition-normal);
+    }
+    
+    .card-header .avatar-container {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid var(--primary-light);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-right: 12px;
+    }
+    
+    .card-header .avatar-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .avatar-container:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .confession-content {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--text-color);
+    }
+    
+    .confession-date {
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+    
+    .confession-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .action-btn {
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        transition: var(--transition-bounce);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .comment-btn {
+        background-color: rgba(114, 9, 183, 0.1);
+        color: var(--primary-color);
+        border: none;
+    }
+    
+    .comment-btn:hover {
+        background-color: rgba(114, 9, 183, 0.2);
+        color: var(--primary-dark);
+    }
+    
+    .favorite-btn {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        transition: var(--transition-bounce);
+    }
+    
+    .favorite-btn:hover {
+        color: var(--accent-color);
+        transform: scale(1.1);
+    }
+    
+    .favorite-btn.active {
+        color: var(--accent-color);
+    }
+    
+    .favorite-btn.active:hover {
+        color: var(--accent-dark);
+    }
+    
+    .favorite-btn .favorite-count {
+        font-weight: 500;
+        transition: var(--transition-normal);
+    }
+    
+    .pagination {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .page-link {
+        border-radius: 8px;
+        margin: 0 3px;
+        border: none;
+        color: var(--primary-color);
+        font-weight: 500;
+        transition: var(--transition-normal);
+    }
+    
+    .page-link:hover {
+        background-color: rgba(114, 9, 183, 0.1);
+        color: var(--primary-dark);
+    }
+    
+    .page-item.active .page-link {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .empty-confessions {
+        background: linear-gradient(135deg, rgba(114, 9, 183, 0.05), rgba(76, 201, 240, 0.05));
+        border-radius: var(--card-radius);
+        padding: 3rem;
+        text-align: center;
+        border: 2px dashed rgba(114, 9, 183, 0.2);
+    }
+    
+    .empty-confessions i {
+        font-size: 3rem;
+        color: var(--primary-light);
+        margin-bottom: 1.5rem;
+        opacity: 0.7;
+    }
+    
+    .empty-confessions h3 {
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-lg-4 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h2 class="h5 mb-0">Escribe tu Confesión</h2>
+        <div class="card confession-form-card shadow">
+            <div class="confession-form-header">
+                <h2 class="h5 mb-0"><i class="fas fa-feather-alt me-2"></i> Escribe tu Confesión</h2>
             </div>
-            <div class="card-body">
-                <form method="POST" action="{{ url_for('new_confession') }}">
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('new_confession') }}" id="confessionForm">
                     {{ form.hidden_tag() }}
                     
                     <div class="mb-3">
-                        {{ form.content(class="form-control", rows="5", placeholder="Escribe aquí tu confesión anónima...") }}
+                        {{ form.content(class="form-control confession-textarea", rows="5", placeholder="Escribe aquí tu confesión anónima...", id="confessionText") }}
                         {% for error in form.content.errors %}
-                        <div class="form-text text-danger">{{ error }}</div>
+                        <div class="text-danger mt-2 small">
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                        </div>
                         {% endfor %}
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted" id="characterCount">0/1000 caracteres</small>
+                            <div class="avatar-container">
+                                <img src="{{ url_for('static', filename='img/avatars/' ~ random_avatar_id ~ '.svg') }}" 
+                                     alt="Tu avatar" width="32" height="32" class="avatar-img-sm">
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="d-grid">
-                        {{ form.submit(class="btn btn-primary") }}
+                        {{ form.submit(class="btn btn-primary post-confession-btn") }}
                     </div>
                 </form>
             </div>
@@ -29,138 +276,249 @@
     </div>
     
     <div class="col-lg-8">
-        <h1 class="h2 mb-4">Confesiones Recientes</h1>
+        <h1 class="h2 confessions-title">Confesiones Recientes</h1>
         
-        {% if confessions.items %}
-            {% for confession in confessions.items %}
-            <div class="card confession-card mb-4 shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <img src="{{ url_for('static', filename='svg/avatars/avatar' + confession.avatar_id|string + '.svg') }}" 
-                             alt="Avatar" class="avatar-img me-2">
-                        <span class="text-muted small">Anónimo · {{ confession.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
-                    </div>
-                    
-                    <div class="confession-actions">
-                        {% if current_user.id == confession.user_id or current_user.is_admin %}
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-link text-dark dropdown-toggle" type="button" id="dropdownMenuButton{{ confession.id }}" 
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton{{ confession.id }}">
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('edit_confession', id=confession.id) }}">
-                                        <i class="fas fa-edit me-2"></i> Editar
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteConfessionModal{{ confession.id }}">
-                                        <i class="fas fa-trash-alt me-2"></i> Eliminar
-                                    </a>
-                                </li>
-                            </ul>
+        <div class="confession-container">
+            {% if confessions.items %}
+                {% for confession in confessions.items %}
+                <div class="card confession-card shadow fade-in stagger-item">
+                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-container">
+                                <img src="{{ url_for('static', filename='img/avatars/' ~ confession.avatar_id ~ '.svg') }}" 
+                                     alt="Avatar" class="avatar-img">
+                            </div>
+                            <div>
+                                <span class="fw-bold">Anónimo</span>
+                                <div class="confession-date">{{ confession.created_at.strftime('%d de %B, %Y • %H:%M') }}</div>
+                            </div>
                         </div>
                         
-                        <!-- Delete Confirmation Modal -->
-                        <div class="modal fade" id="deleteConfessionModal{{ confession.id }}" tabindex="-1" aria-labelledby="deleteConfessionModalLabel{{ confession.id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteConfessionModalLabel{{ confession.id }}">Confirmar eliminación</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        ¿Estás seguro de que deseas eliminar esta confesión? Esta acción no se puede deshacer.
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <form action="{{ url_for('delete_confession', id=confession.id) }}" method="POST">
-                                            <button type="submit" class="btn btn-danger">Eliminar</button>
-                                        </form>
+                        <div class="confession-actions">
+                            {% if current_user.id == confession.user_id or current_user.is_admin %}
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link text-dark dropdown-toggle" type="button" id="dropdownMenuButton{{ confession.id }}" 
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="dropdownMenuButton{{ confession.id }}">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('edit_confession', id=confession.id) }}">
+                                            <i class="fas fa-edit me-2"></i> Editar
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteConfessionModal{{ confession.id }}">
+                                            <i class="fas fa-trash-alt me-2"></i> Eliminar
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Delete Confirmation Modal -->
+                            <div class="modal fade" id="deleteConfessionModal{{ confession.id }}" tabindex="-1" aria-labelledby="deleteConfessionModalLabel{{ confession.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteConfessionModalLabel{{ confession.id }}">Confirmar eliminación</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p><i class="fas fa-exclamation-triangle text-warning me-2"></i> ¿Estás seguro de que deseas eliminar esta confesión?</p>
+                                            <p class="text-muted small mb-0">Esta acción no se puede deshacer y eliminará todos los comentarios asociados.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <form action="{{ url_for('delete_confession', id=confession.id) }}" method="POST">
+                                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="card-body">
-                    <p class="card-text">{{ confession.content }}</p>
-                </div>
-                
-                <div class="card-footer d-flex justify-content-between align-items-center bg-white">
-                    <div>
-                        <a href="{{ url_for('confession_detail', id=confession.id) }}" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-comment-alt me-1"></i> Comentarios ({{ confession.get_comment_count() }})
-                        </a>
-                    </div>
-                    
-                    <div>
-                        <form action="{{ url_for('toggle_favorite', id=confession.id) }}" method="POST" class="d-inline favorite-form">
-                            <button type="submit" class="btn btn-sm btn-link text-decoration-none {{ 'text-danger' if confession.id in user_favorites else 'text-muted' }}">
-                                <i class="fas fa-heart me-1"></i> {{ confession.get_favorite_count() }}
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-            
-            <!-- Pagination -->
-            <nav aria-label="Navegación de páginas">
-                <ul class="pagination justify-content-center">
-                    {% if confessions.has_prev %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('confessions', page=confessions.prev_num) }}" aria-label="Anterior">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="Anterior">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for page_num in confessions.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-                        {% if page_num %}
-                            {% if page_num == confessions.page %}
-                            <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
-                            {% else %}
-                            <li class="page-item"><a class="page-link" href="{{ url_for('confessions', page=page_num) }}">{{ page_num }}</a></li>
                             {% endif %}
-                        {% else %}
-                            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
-                        {% endif %}
-                    {% endfor %}
+                        </div>
+                    </div>
                     
-                    {% if confessions.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('confessions', page=confessions.next_num) }}" aria-label="Siguiente">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="Siguiente">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% else %}
-            <div class="alert alert-info">
-                <p class="mb-0">No hay confesiones aún. ¡Sé el primero en compartir tu secreto!</p>
-            </div>
-        {% endif %}
+                    <div class="card-body">
+                        <p class="card-text confession-content">{{ confession.content }}</p>
+                    </div>
+                    
+                    <div class="confession-footer">
+                        <div>
+                            <a href="{{ url_for('confession_detail', id=confession.id) }}" class="btn action-btn comment-btn">
+                                <i class="fas fa-comment-alt"></i>
+                                <span>{{ confession.get_comment_count() }}</span>
+                            </a>
+                        </div>
+                        
+                        <div>
+                            <form action="{{ url_for('toggle_favorite', id=confession.id) }}" method="POST" class="d-inline favorite-form">
+                                <button type="submit" class="btn action-btn favorite-btn {{ 'active' if confession.id in user_favorites else '' }}">
+                                    <i class="fas fa-heart"></i>
+                                    <span class="favorite-count">{{ confession.get_favorite_count() }}</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <!-- Pagination -->
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination justify-content-center">
+                        {% if confessions.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('confessions', page=confessions.prev_num) }}" aria-label="Anterior">
+                                <span aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Anterior">
+                                <span aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in confessions.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                            {% if page_num %}
+                                {% if page_num == confessions.page %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                                {% else %}
+                                <li class="page-item"><a class="page-link" href="{{ url_for('confessions', page=page_num) }}">{{ page_num }}</a></li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if confessions.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('confessions', page=confessions.next_num) }}" aria-label="Siguiente">
+                                <span aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Siguiente">
+                                <span aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="empty-confessions">
+                    <i class="fas fa-feather-alt pulse-icon"></i>
+                    <h3>No hay confesiones aún</h3>
+                    <p class="text-muted mb-4">¡Sé el primero en compartir tus pensamientos anónimos!</p>
+                    <a href="#confessionForm" class="btn btn-primary btn-lg">
+                        <i class="fas fa-pen me-2"></i> Escribe una confesión
+                    </a>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/confessions.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter
+    const textarea = document.getElementById('confessionText');
+    const charCounter = document.getElementById('characterCount');
+    
+    if (textarea && charCounter) {
+        textarea.addEventListener('input', function() {
+            const currentLength = textarea.value.length;
+            charCounter.textContent = `${currentLength}/1000 caracteres`;
+            
+            if (currentLength > 800) {
+                charCounter.classList.add('text-warning');
+            } else {
+                charCounter.classList.remove('text-warning');
+            }
+            
+            if (currentLength > 950) {
+                charCounter.classList.add('text-danger');
+                charCounter.classList.remove('text-warning');
+            } else {
+                charCounter.classList.remove('text-danger');
+            }
+        });
+    }
+    
+    // Favorite toggle animation
+    const favoriteForms = document.querySelectorAll('.favorite-form');
+    favoriteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const button = this.querySelector('button');
+            const icon = button.querySelector('i');
+            const countEl = button.querySelector('.favorite-count');
+            const count = parseInt(countEl.textContent);
+            
+            // Animate heart
+            icon.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                icon.style.transform = 'scale(1)';
+            }, 300);
+            
+            // Toggle state visually while request is sent
+            if (button.classList.contains('active')) {
+                button.classList.remove('active');
+                countEl.textContent = Math.max(0, count - 1);
+            } else {
+                button.classList.add('active');
+                countEl.textContent = count + 1;
+            }
+            
+            // Send the request
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams(new FormData(this))
+            }).then(response => {
+                if (!response.ok) {
+                    // On error, revert the UI changes
+                    if (button.classList.contains('active')) {
+                        button.classList.remove('active');
+                        countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
+                    } else {
+                        button.classList.add('active');
+                        countEl.textContent = parseInt(countEl.textContent) + 1;
+                    }
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
+    // Animation for confession cards
+    const fadeElements = document.querySelectorAll('.fade-in');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    fadeElements.forEach(element => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+        element.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        observer.observe(element);
+    });
+});
+</script>
 {% endblock %}
