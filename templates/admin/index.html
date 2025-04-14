@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de Administración - Confesiones Anónimas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-3 mb-4">
+        <div class="list-group shadow-sm">
+            <a href="{{ url_for('admin_index') }}" class="list-group-item list-group-item-action active">
+                <i class="fas fa-tachometer-alt me-2"></i> Panel Principal
+            </a>
+            <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action">
+                <i class="fas fa-users me-2"></i> Usuarios
+            </a>
+            <a href="{{ url_for('admin_confessions') }}" class="list-group-item list-group-item-action">
+                <i class="fas fa-comment-dots me-2"></i> Confesiones
+            </a>
+            <a href="{{ url_for('admin_comments') }}" class="list-group-item list-group-item-action">
+                <i class="fas fa-comments me-2"></i> Comentarios
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-lg-9">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h4 mb-0">Panel de Administración</h1>
+            </div>
+            <div class="card-body">
+                <p>Bienvenido al panel de administración, {{ current_user.name }}. Desde aquí puedes gestionar todos los aspectos de Confesiones Anónimas.</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary"><i class="fas fa-users fa-2x mb-3"></i></h5>
+                        <h2 class="display-4 fw-bold">{{ total_users }}</h2>
+                        <p class="text-muted">Usuarios registrados</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary"><i class="fas fa-comment-dots fa-2x mb-3"></i></h5>
+                        <h2 class="display-4 fw-bold">{{ total_confessions }}</h2>
+                        <p class="text-muted">Confesiones</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary"><i class="fas fa-comments fa-2x mb-3"></i></h5>
+                        <h2 class="display-4 fw-bold">{{ total_comments }}</h2>
+                        <p class="text-muted">Comentarios</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Usuarios Recientes</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Registro</th>
+                                        <th>Última Actividad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in recent_users %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.registered_on.strftime('%d/%m/%Y') }}</td>
+                                        <td>{{ user.last_active.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-primary">Ver todos los usuarios</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">Confesiones Recientes</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Contenido</th>
+                                        <th>Fecha</th>
+                                        <th>Comentarios</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for confession in recent_confessions %}
+                                    <tr>
+                                        <td>{{ confession.content|truncate(30) }}</td>
+                                        <td>{{ confession.created_at.strftime('%d/%m/%Y') }}</td>
+                                        <td>{{ confession.get_comment_count() }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ url_for('admin_confessions') }}" class="btn btn-sm btn-primary">Ver todas las confesiones</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

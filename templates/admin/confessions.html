@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Confesiones - Confesiones Anónimas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-3 mb-4">
+        <div class="list-group shadow-sm">
+            <a href="{{ url_for('admin_index') }}" class="list-group-item list-group-item-action">
+                <i class="fas fa-tachometer-alt me-2"></i> Panel Principal
+            </a>
+            <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action">
+                <i class="fas fa-users me-2"></i> Usuarios
+            </a>
+            <a href="{{ url_for('admin_confessions') }}" class="list-group-item list-group-item-action active">
+                <i class="fas fa-comment-dots me-2"></i> Confesiones
+            </a>
+            <a href="{{ url_for('admin_comments') }}" class="list-group-item list-group-item-action">
+                <i class="fas fa-comments me-2"></i> Comentarios
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-lg-9">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h4 mb-0">Gestión de Confesiones</h1>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Contenido</th>
+                                <th>Usuario</th>
+                                <th>Fecha</th>
+                                <th>Comentarios</th>
+                                <th>Favoritos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for confession in confessions.items %}
+                            <tr>
+                                <td>{{ confession.id }}</td>
+                                <td>{{ confession.content|truncate(30) }}</td>
+                                <td>{{ confession.user_id }}</td>
+                                <td>{{ confession.created_at.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ confession.get_comment_count() }}</td>
+                                <td>{{ confession.get_favorite_count() }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('confession_detail', id=confession.id) }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('edit_confession', id=confession.id) }}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfessionModal{{ confession.id }}">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        
+                                        <!-- Delete Confession Modal -->
+                                        <div class="modal fade" id="deleteConfessionModal{{ confession.id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Eliminar Confesión</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>¿Estás seguro de que deseas eliminar esta confesión?</p>
+                                                        <p class="text-danger">Esta acción eliminará todos los comentarios asociados y no se puede deshacer.</p>
+                                                        <div class="alert alert-secondary">
+                                                            {{ confession.content|truncate(100) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                        <form action="{{ url_for('delete_confession', id=confession.id) }}" method="POST">
+                                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="card-footer">
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if confessions.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_confessions', page=confessions.prev_num) }}" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in confessions.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                            {% if page_num %}
+                                {% if page_num == confessions.page %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                                {% else %}
+                                <li class="page-item"><a class="page-link" href="{{ url_for('admin_confessions', page=page_num) }}">{{ page_num }}</a></li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if confessions.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_confessions', page=confessions.next_num) }}" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

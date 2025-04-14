@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - Confesiones Anónimas{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h2 class="h4 mb-0">Iniciar Sesión</h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('login') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">{{ form.username.label }}</label>
+                        {{ form.username(class="form-control", id="username", placeholder="Ingresa tu nombre de usuario") }}
+                        {% for error in form.username.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">{{ form.password.label }}</label>
+                        {{ form.password(class="form-control", id="password", placeholder="Ingresa tu contraseña") }}
+                        {% for error in form.password.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.remember_me(class="form-check-input", id="remember_me") }}
+                        <label class="form-check-label" for="remember_me">{{ form.remember_me.label }}</label>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <p class="mb-0">¿No tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

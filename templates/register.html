@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - Confesiones Anónimas{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h2 class="h4 mb-0">Crear una cuenta</h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('register') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="name" class="form-label">{{ form.name.label }}</label>
+                        {{ form.name(class="form-control", id="name", placeholder="Ingresa tu nombre completo") }}
+                        {% for error in form.name.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">{{ form.username.label }}</label>
+                        {{ form.username(class="form-control", id="username", placeholder="Elige un nombre de usuario único") }}
+                        {% for error in form.username.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">{{ form.email.label }}</label>
+                        {{ form.email(class="form-control", id="email", placeholder="Ingresa tu correo electrónico") }}
+                        {% for error in form.email.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">{{ form.password.label }}</label>
+                        {{ form.password(class="form-control", id="password", placeholder="Crea una contraseña segura") }}
+                        {% for error in form.password.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password2" class="form-label">{{ form.password2.label }}</label>
+                        {{ form.password2(class="form-control", id="password2", placeholder="Repite tu contraseña") }}
+                        {% for error in form.password2.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <p class="mb-0">¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

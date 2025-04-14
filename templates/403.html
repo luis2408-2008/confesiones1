@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Acceso Prohibido | Confesiones Anónimas{% endblock %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h1 class="display-4 mb-4 text-danger">Error 403</h1>
+    <p class="lead">No tienes permiso para acceder a esta página.</p>
+    <p class="mb-5">Esta área está restringida. Por favor, regresa a un área a la que tengas acceso.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Volver a la página de inicio</a>
+</div>
+{% endblock %}

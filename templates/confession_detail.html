@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Confesión - Confesiones Anónimas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2">{% if editing %}Editar Confesión{% elif editing_comment %}Editar Comentario{% else %}Detalle de Confesión{% endif %}</h1>
+            <a href="{{ url_for('confessions') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+        
+        {% if editing %}
+        <!-- Edit Confession Form -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0">Editar Confesión</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('edit_confession', id=confession.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.content(class="form-control", rows="5") }}
+                        {% for error in form.content.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('confession_detail', id=confession.id) }}" class="btn btn-outline-secondary me-2">Cancelar</a>
+                        {{ form.submit(class="btn btn-primary", value="Guardar Cambios") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% elif editing_comment %}
+        <!-- Edit Comment Form -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0">Editar Comentario</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('edit_comment', id=editing_comment.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.content(class="form-control", rows="3") }}
+                        {% for error in form.content.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('confession_detail', id=confession.id) }}" class="btn btn-outline-secondary me-2">Cancelar</a>
+                        {{ form.submit(class="btn btn-primary", value="Guardar Cambios") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <!-- Confession Detail -->
+        <div class="card confession-card mb-4 shadow">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <img src="{{ url_for('static', filename='svg/avatars/avatar' + confession.avatar_id|string + '.svg') }}" 
+                         alt="Avatar" class="avatar-img me-2">
+                    <span class="text-muted small">Anónimo · {{ confession.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                </div>
+                
+                <div class="confession-actions">
+                    {% if current_user.id == confession.user_id or current_user.is_admin %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-link text-dark dropdown-toggle" type="button" id="dropdownMenuButton" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('edit_confession', id=confession.id) }}">
+                                    <i class="fas fa-edit me-2"></i> Editar
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteConfessionModal">
+                                    <i class="fas fa-trash-alt me-2"></i> Eliminar
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteConfessionModal" tabindex="-1" aria-labelledby="deleteConfessionModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteConfessionModalLabel">Confirmar eliminación</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estás seguro de que deseas eliminar esta confesión? Esta acción no se puede deshacer.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <form action="{{ url_for('delete_confession', id=confession.id) }}" method="POST">
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <p class="card-text">{{ confession.content }}</p>
+            </div>
+            
+            <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+                <div>
+                    <span class="text-muted">
+                        <i class="fas fa-comment-alt me-1"></i> {{ confession.get_comment_count() }} Comentarios
+                    </span>
+                </div>
+                
+                <div>
+                    <form action="{{ url_for('toggle_favorite', id=confession.id) }}" method="POST" class="d-inline favorite-form">
+                        <button type="submit" class="btn btn-sm btn-link text-decoration-none {{ 'text-danger' if is_favorite else 'text-muted' }}">
+                            <i class="fas fa-heart me-1"></i> {{ confession.get_favorite_count() }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comments Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h2 class="h5 mb-0">Comentarios</h2>
+            </div>
+            <div class="card-body">
+                {% if comments %}
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="comment-item d-flex mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
+                        <img src="{{ url_for('static', filename='svg/avatars/avatar' + comment.avatar_id|string + '.svg') }}" 
+                             alt="Avatar" class="avatar-img-sm me-2 mt-1">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="text-muted">Anónimo · {{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                
+                                {% if current_user.id == comment.user_id or current_user.is_admin %}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link text-dark p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ url_for('edit_comment', id=comment.id) }}">
+                                                <i class="fas fa-edit me-2"></i> Editar
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteCommentModal{{ comment.id }}">
+                                                <i class="fas fa-trash-alt me-2"></i> Eliminar
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Delete Comment Modal -->
+                                <div class="modal fade" id="deleteCommentModal{{ comment.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirmar eliminación</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estás seguro de que deseas eliminar este comentario? Esta acción no se puede deshacer.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <form action="{{ url_for('delete_comment', id=comment.id) }}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <p class="mb-0">{{ comment.content }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Add Comment Form -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h2 class="h5 mb-0">Deja tu comentario</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_comment', id=confession.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.content(class="form-control", rows="3", placeholder="Escribe tu comentario anónimo...") }}
+                        {% for error in form.content.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/confessions.js') }}"></script>
+{% endblock %}

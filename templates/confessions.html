@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Confesiones - Confesiones Anónimas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0">Escribe tu Confesión</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('new_confession') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.content(class="form-control", rows="5", placeholder="Escribe aquí tu confesión anónima...") }}
+                        {% for error in form.content.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <h1 class="h2 mb-4">Confesiones Recientes</h1>
+        
+        {% if confessions.items %}
+            {% for confession in confessions.items %}
+            <div class="card confession-card mb-4 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ url_for('static', filename='svg/avatars/avatar' + confession.avatar_id|string + '.svg') }}" 
+                             alt="Avatar" class="avatar-img me-2">
+                        <span class="text-muted small">Anónimo · {{ confession.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </div>
+                    
+                    <div class="confession-actions">
+                        {% if current_user.id == confession.user_id or current_user.is_admin %}
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-link text-dark dropdown-toggle" type="button" id="dropdownMenuButton{{ confession.id }}" 
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton{{ confession.id }}">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('edit_confession', id=confession.id) }}">
+                                        <i class="fas fa-edit me-2"></i> Editar
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteConfessionModal{{ confession.id }}">
+                                        <i class="fas fa-trash-alt me-2"></i> Eliminar
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Delete Confirmation Modal -->
+                        <div class="modal fade" id="deleteConfessionModal{{ confession.id }}" tabindex="-1" aria-labelledby="deleteConfessionModalLabel{{ confession.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteConfessionModalLabel{{ confession.id }}">Confirmar eliminación</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Estás seguro de que deseas eliminar esta confesión? Esta acción no se puede deshacer.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <form action="{{ url_for('delete_confession', id=confession.id) }}" method="POST">
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <p class="card-text">{{ confession.content }}</p>
+                </div>
+                
+                <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+                    <div>
+                        <a href="{{ url_for('confession_detail', id=confession.id) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-comment-alt me-1"></i> Comentarios ({{ confession.get_comment_count() }})
+                        </a>
+                    </div>
+                    
+                    <div>
+                        <form action="{{ url_for('toggle_favorite', id=confession.id) }}" method="POST" class="d-inline favorite-form">
+                            <button type="submit" class="btn btn-sm btn-link text-decoration-none {{ 'text-danger' if confession.id in user_favorites else 'text-muted' }}">
+                                <i class="fas fa-heart me-1"></i> {{ confession.get_favorite_count() }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            <nav aria-label="Navegación de páginas">
+                <ul class="pagination justify-content-center">
+                    {% if confessions.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('confessions', page=confessions.prev_num) }}" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in confessions.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == confessions.page %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ url_for('confessions', page=page_num) }}">{{ page_num }}</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if confessions.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('confessions', page=confessions.next_num) }}" aria-label="Siguiente">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Siguiente">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% else %}
+            <div class="alert alert-info">
+                <p class="mb-0">No hay confesiones aún. ¡Sé el primero en compartir tu secreto!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/confessions.js') }}"></script>
+{% endblock %}
