@@ -1,0 +1,63 @@
+==== INSTRUCCIONES PARA DESPLEGAR EN RENDER ====
+
+1. CREAR BASE DE DATOS POSTGRESQL EN RENDER
+=============================================
+1. Inicia sesión en tu cuenta de Render.
+2. Ve a la sección "New +" y selecciona "PostgreSQL".
+3. Configura la base de datos:
+   - Nombre: confessiones-db (o el nombre que prefieras)
+   - Usuario: Deja el valor predeterminado
+   - Región: Selecciona la más cercana a tus usuarios
+   - Plan: Selecciona el plan que mejor se adapte a tus necesidades
+4. Haz clic en "Create Database".
+
+2. CREAR WEB SERVICE PARA LA APLICACIÓN
+========================================
+1. Ve a la sección "New +" y selecciona "Web Service".
+2. Conecta tu repositorio de GitHub o sube tu código fuente.
+3. Configura el servicio:
+   - Nombre: confessiones (o el nombre que prefieras)
+   - Entorno: Python
+   - Región: La misma que seleccionaste para la base de datos
+   - Branch: main (o la rama principal de tu repositorio)
+   - Comando de Construcción (Build Command): pip install -r render_requirements.txt && chmod +x ./install_postgresql.sh && ./install_postgresql.sh
+   - Comando de Inicio (Start Command): gunicorn main:app
+   - Plan: Selecciona el plan que mejor se adapte a tus necesidades
+
+3. VARIABLES DE ENTORNO A CONFIGURAR
+====================================
+Agrega estas variables de entorno en la sección "Environment" de tu Web Service:
+
+DATABASE_URL: postgresql://confesiones_user:EoSwCDhF0x0YAwFVobAAnRNroXVTUvfz@dpg-cvu8j0ruibrs73ejqbr0-a/confesiones
+SECRET_KEY: sdf783hf8723hfoiu234hf892h3f892h3f8923hf
+SESSION_SECRET: sdf783hf8723hfoiu234hf892h3f892h3f8923hf
+ADMIN_USERNAME: admin
+ADMIN_PASSWORD: admin1234
+ADMIN_EMAIL: admin@confessiones.com
+
+4. FINALIZAR DESPLIEGUE
+=======================
+1. Haz clic en "Create Web Service" para iniciar el despliegue.
+2. Monitorea los registros durante el despliegue para detectar posibles errores.
+3. La primera compilación puede tardar unos minutos en completarse.
+4. Una vez completada, haz clic en la URL de tu aplicación para verificar que funcione correctamente.
+
+5. INICIAR SESIÓN COMO ADMINISTRADOR
+===================================
+Usuario: admin
+Contraseña: admin1234
+
+6. CARACTERÍSTICAS DEL PANEL DE ADMINISTRADOR
+===========================================
+El panel de administrador te permite:
+- Ver todos los usuarios registrados (nombre, correo, fecha de registro, última actividad)
+- Ver y gestionar todas las confesiones
+- Moderar comentarios (aprobar/desaprobar)
+- Ver estadísticas de uso de la plataforma
+
+7. MANTENIMIENTO CONTINUO
+========================
+- La base de datos persistirá todos los datos incluso cuando la aplicación se actualice.
+- Cada vez que actualices el código en GitHub, Render reconstruirá automáticamente la aplicación.
+- Revisa regularmente los registros para detectar posibles problemas.
+- Considera configurar copias de seguridad periódicas de la base de datos.
