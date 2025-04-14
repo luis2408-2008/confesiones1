@@ -1,0 +1,13 @@
+Make sure that everything is properly set up and installed before uploading the project to Render. If you haven’t installed all the required dependencies yet, please install them first. Once everything is ready, you can use the following commands to deploy the app to Render as you instructed in your initial instructions.
+	1.	Install Dependencies: If you haven’t installed the dependencies yet, please run the following command to install them: pip install -r requirements.txt.
+	2.	Build Command for Render: After installing the dependencies, use the following Build Command for Render: pip install -r render_requirements.txt && chmod +x ./install_postgresql.sh && ./install_postgresql.sh.
+	3.	Start Command for Render: For the Start Command in Render, use the following: gunicorn main:app.
+	4.	Setting Environment Variables: In the Add Environment Variable section in Render:
+	•	Add the DATABASE_URL from your external database (make sure your database is hosted externally, and the connection is set up correctly for persistence).
+	•	Add the SECRET_KEY with a long random string, e.g., sdf783hf8723hfoiu234hf892h3f892h3f8923hf.
+	•	Optionally, add ADMIN_USERNAME, ADMIN_PASSWORD, and ADMIN_EMAIL.
+	5.	Ensure External Database Storage: Make sure that your database is stored externally (e.g., using a cloud database service like Render’s PostgreSQL or another external service). This ensures that all data is preserved and updated even when the application is updated on Render. The database must remain connected and persist across all updates, and the connection should be properly configured so that no data is lost during deployment or updates.
+	6.	Create Web Service: Click Create Web Service to start the deployment process in Render.
+	7.	Check the Logs: Monitor the logs to ensure there are no errors during the installation. Verify that the database connection works correctly, the external database is connected, and that the admin script (init_admin.py) runs as expected.
+
+Make sure that the frontend and backend are correctly connected and that the database remains fully functional, with all data persisting across updates.
