@@ -2,66 +2,331 @@
 
 {% block title %}Registro - Confesiones Anónimas{% endblock %}
 
+{% block styles %}
+<style>
+    .register-container {
+        animation: fadeIn 0.8s ease-out;
+    }
+    
+    .register-illustration {
+        position: relative;
+        overflow: hidden;
+        border-radius: 0 var(--card-radius) var(--card-radius) 0;
+        background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        height: 100%;
+    }
+    
+    .register-illustration::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        pointer-events: none;
+    }
+    
+    .register-card {
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        transition: var(--transition-normal);
+        border: none;
+    }
+    
+    .form-floating {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-floating input:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.25rem rgba(76, 201, 240, 0.15);
+    }
+    
+    .register-btn {
+        padding: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: var(--transition-bounce);
+        background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
+        border: none;
+    }
+    
+    .register-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(76, 201, 240, 0.3);
+        background: linear-gradient(135deg, var(--secondary-dark), var(--secondary-color));
+    }
+    
+    .register-footer {
+        margin-top: 1.5rem;
+        text-align: center;
+    }
+    
+    .register-footer a {
+        color: var(--secondary-color);
+        font-weight: 500;
+        text-decoration: none;
+        position: relative;
+    }
+    
+    .register-footer a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -3px;
+        left: 50%;
+        background: linear-gradient(to right, var(--secondary-color), var(--secondary-dark));
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+    
+    .register-footer a:hover::after {
+        width: 100%;
+    }
+    
+    .floating-bubbles div {
+        position: absolute;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        animation: float 8s infinite ease-in-out;
+    }
+    
+    .bubble1 {
+        width: 80px;
+        height: 80px;
+        top: 10%;
+        right: 10%;
+        animation-delay: 0s !important;
+    }
+    
+    .bubble2 {
+        width: 50px;
+        height: 50px;
+        top: 40%;
+        right: 20%;
+        animation-delay: 1s !important;
+    }
+    
+    .bubble3 {
+        width: 60px;
+        height: 60px;
+        bottom: 20%;
+        right: 15%;
+        animation-delay: 2s !important;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(10deg); }
+    }
+    
+    .rotate-icon {
+        animation: rotate 8s linear infinite;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .strength-meter {
+        height: 6px;
+        border-radius: 3px;
+        margin-top: 0.25rem;
+        transition: var(--transition-normal);
+        background-color: #e9ecef;
+    }
+    
+    .strength-meter-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: var(--transition-normal);
+        width: 0%;
+    }
+    
+    .avatar-preview {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-color: var(--light-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        border: 3px solid white;
+        box-shadow: 0 6px 15px rgba(76, 201, 240, 0.2);
+        overflow: hidden;
+    }
+    
+    .avatar-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    @media (max-width: 991.98px) {
+        .register-illustration {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center py-3">
-                <h2 class="h4 mb-0">Crear una cuenta</h2>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST" action="{{ url_for('register') }}">
-                    {{ form.hidden_tag() }}
-                    
-                    <div class="mb-3">
-                        <label for="name" class="form-label">{{ form.name.label }}</label>
-                        {{ form.name(class="form-control", id="name", placeholder="Ingresa tu nombre completo") }}
-                        {% for error in form.name.errors %}
-                        <div class="form-text text-danger">{{ error }}</div>
-                        {% endfor %}
+<div class="container register-container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="row register-card shadow-lg">
+                <!-- Lado izquierdo con formulario de registro -->
+                <div class="col-lg-7 p-0">
+                    <div class="card-body p-4 p-lg-5">
+                        <div class="text-center mb-4">
+                            <h2 class="auth-title">Crear una cuenta</h2>
+                            <p class="text-muted">Únete a nuestra comunidad de confesiōnes</p>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('register') }}" class="auth-form-content">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="form-floating mb-3">
+                                {{ form.name(class="form-control", id="name", placeholder="Nombre Completo") }}
+                                <label for="name">{{ form.name.label }}</label>
+                                {% for error in form.name.errors %}
+                                <div class="text-danger mt-1 small">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                {{ form.username(class="form-control", id="username", placeholder="Nombre de Usuario") }}
+                                <label for="username">{{ form.username.label }}</label>
+                                {% for error in form.username.errors %}
+                                <div class="text-danger mt-1 small">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                {{ form.email(class="form-control", id="email", placeholder="Correo Electrónico") }}
+                                <label for="email">{{ form.email.label }}</label>
+                                {% for error in form.email.errors %}
+                                <div class="text-danger mt-1 small">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                {{ form.password(class="form-control", id="password", placeholder="Contraseña") }}
+                                <label for="password">{{ form.password.label }}</label>
+                                <div class="strength-meter">
+                                    <div class="strength-meter-fill" id="passwordStrength"></div>
+                                </div>
+                                {% for error in form.password.errors %}
+                                <div class="text-danger mt-1 small">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="form-floating mb-4">
+                                {{ form.password2(class="form-control", id="password2", placeholder="Repetir Contraseña") }}
+                                <label for="password2">{{ form.password2.label }}</label>
+                                {% for error in form.password2.errors %}
+                                <div class="text-danger mt-1 small">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="d-grid mb-4">
+                                {{ form.submit(class="btn btn-primary register-btn") }}
+                            </div>
+                            
+                            <div class="register-footer">
+                                <p>¿Ya tienes una cuenta? <a href="{{ url_for('login') }}" class="interactive-element">Inicia sesión</a></p>
+                            </div>
+                        </form>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="username" class="form-label">{{ form.username.label }}</label>
-                        {{ form.username(class="form-control", id="username", placeholder="Elige un nombre de usuario único") }}
-                        {% for error in form.username.errors %}
-                        <div class="form-text text-danger">{{ error }}</div>
-                        {% endfor %}
+                </div>
+                
+                <!-- Lado derecho con ilustración -->
+                <div class="col-lg-5 d-none d-lg-block p-0">
+                    <div class="register-illustration">
+                        <div class="floating-bubbles">
+                            <div class="bubble1"></div>
+                            <div class="bubble2"></div>
+                            <div class="bubble3"></div>
+                        </div>
+                        <div class="text-center mb-4">
+                            <div class="avatar-preview mb-4">
+                                <img src="{{ url_for('static', filename='img/avatars/1.png') }}" id="avatarPreview" alt="Avatar Preview">
+                            </div>
+                            <i class="fas fa-user-plus fa-3x mb-3 rotate-icon"></i>
+                            <h3 class="mb-4">Únete ahora</h3>
+                            <p class="mb-0">Al registrarte obtendrás acceso a todas las funcionalidades y podrás comenzar a compartir tus confesiones de forma segura.</p>
+                        </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="email" class="form-label">{{ form.email.label }}</label>
-                        {{ form.email(class="form-control", id="email", placeholder="Ingresa tu correo electrónico") }}
-                        {% for error in form.email.errors %}
-                        <div class="form-text text-danger">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="password" class="form-label">{{ form.password.label }}</label>
-                        {{ form.password(class="form-control", id="password", placeholder="Crea una contraseña segura") }}
-                        {% for error in form.password.errors %}
-                        <div class="form-text text-danger">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="password2" class="form-label">{{ form.password2.label }}</label>
-                        {{ form.password2(class="form-control", id="password2", placeholder="Repite tu contraseña") }}
-                        {% for error in form.password2.errors %}
-                        <div class="form-text text-danger">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        {{ form.submit(class="btn btn-primary") }}
-                    </div>
-                </form>
-            </div>
-            <div class="card-footer text-center py-3">
-                <p class="mb-0">¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Script para el medidor de fortaleza de contraseña -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('password');
+        const strengthMeter = document.getElementById('passwordStrength');
+        
+        // Actualizar avatar aleatorio
+        const avatarPreview = document.getElementById('avatarPreview');
+        const randomAvatar = Math.floor(Math.random() * 8) + 1;
+        avatarPreview.src = "{{ url_for('static', filename='img/avatars/') }}" + randomAvatar + ".png";
+        
+        passwordInput.addEventListener('input', function() {
+            const value = passwordInput.value;
+            let strength = 0;
+            
+            if (value.length > 0) {
+                // Longitud
+                if (value.length >= 8) strength += 25;
+                
+                // Mayúsculas y minúsculas
+                if (/[a-z]/.test(value) && /[A-Z]/.test(value)) strength += 25;
+                
+                // Números
+                if (/\d/.test(value)) strength += 25;
+                
+                // Caracteres especiales
+                if (/[^a-zA-Z0-9]/.test(value)) strength += 25;
+            }
+            
+            strengthMeter.style.width = strength + '%';
+            
+            // Cambiar color según la fortaleza
+            if (strength < 25) {
+                strengthMeter.style.backgroundColor = '#dc3545'; // Rojo
+            } else if (strength < 50) {
+                strengthMeter.style.backgroundColor = '#ffc107'; // Amarillo
+            } else if (strength < 75) {
+                strengthMeter.style.backgroundColor = '#17a2b8'; // Azul claro
+            } else {
+                strengthMeter.style.backgroundColor = '#28a745'; // Verde
+            }
+        });
+    });
+</script>
 {% endblock %}

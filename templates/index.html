@@ -2,68 +2,211 @@
 
 {% block title %}Confesiones Anónimas - Inicio{% endblock %}
 
+{% block styles %}
+<style>
+    .floating {
+        animation: floating 3s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    .typewriter h1 {
+        overflow: hidden;
+        border-right: .15em solid var(--accent-color);
+        white-space: nowrap;
+        margin: 0 auto;
+        letter-spacing: .07em;
+        animation: 
+            typing 3.5s steps(40, end),
+            blink-caret .75s step-end infinite;
+    }
+    
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+    
+    @keyframes blink-caret {
+        from, to { border-color: transparent }
+        50% { border-color: var(--accent-color); }
+    }
+    
+    .reveal-text {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .reveal-text::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, var(--primary-light));
+        animation: reveal 1.5s 0.5s forwards;
+    }
+    
+    @keyframes reveal {
+        to {
+            width: 0;
+        }
+    }
+    
+    .pulsate {
+        animation: pulsate 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulsate {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-10 col-lg-8">
-        <div class="text-center mb-5">
-            <img src="{{ url_for('static', filename='svg/logo.svg') }}" alt="Logo" class="img-fluid mb-4" style="max-width: 200px;">
-            <h1 class="display-4 fw-bold">Confesiones Anónimas</h1>
-            <p class="lead mb-4">Comparte tus pensamientos, secretos y confesiones de forma anónima en un espacio seguro.</p>
-            
-            {% if current_user.is_authenticated %}
-            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <a href="{{ url_for('confessions') }}" class="btn btn-primary btn-lg px-4 me-md-2">Ver Confesiones</a>
-            </div>
-            {% else %}
-            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4 me-md-2">Iniciar Sesión</a>
-                <a href="{{ url_for('register') }}" class="btn btn-outline-secondary btn-lg px-4">Registrarse</a>
-            </div>
-            {% endif %}
-        </div>
-        
-        <div class="row g-4 py-5">
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4 rounded shadow-sm">
-                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
-                        <i class="fas fa-user-secret fa-2x"></i>
-                    </div>
-                    <h3>Anonimato</h3>
-                    <p>Comparte tus confesiones de forma completamente anónima. Solo se mostrará un avatar aleatorio.</p>
+<div class="hero-section mb-5">
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-10 col-lg-8 text-center">
+                <div class="mb-4">
+                    <img src="{{ url_for('static', filename='svg/logo.svg') }}" alt="Logo" class="img-fluid mb-4 floating" style="max-width: 180px;">
                 </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4 rounded shadow-sm">
-                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
-                        <i class="fas fa-comments fa-2x"></i>
-                    </div>
-                    <h3>Interacción</h3>
-                    <p>Comenta en las confesiones de otros usuarios y recibe comentarios en las tuyas.</p>
+                
+                <div class="typewriter mb-3">
+                    <h1 class="display-4 fw-bold text-gradient">Confesiones Anónimas</h1>
                 </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4 rounded shadow-sm">
-                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
-                        <i class="fas fa-heart fa-2x"></i>
-                    </div>
-                    <h3>Favoritos</h3>
-                    <p>Marca confesiones como favoritas para encontrarlas fácilmente más tarde.</p>
+                
+                <div class="reveal-text">
+                    <p class="lead mb-5 hero-description">Comparte tus pensamientos, secretos y confesiones de forma anónima en un espacio seguro y de confianza.</p>
                 </div>
+                
+                {% if current_user.is_authenticated %}
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mb-5 fade-in">
+                    <a href="{{ url_for('confessions') }}" class="btn btn-primary btn-lg px-5 py-3 pulse-glow">
+                        <i class="fas fa-eye me-2"></i> Ver Confesiones
+                    </a>
+                    <a href="{{ url_for('new_confession') }}" class="btn btn-secondary btn-lg px-5 py-3">
+                        <i class="fas fa-pen me-2"></i> Nueva Confesión
+                    </a>
+                </div>
+                {% else %}
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mb-5 fade-in">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-5 py-3 pulse-glow">
+                        <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg px-5 py-3">
+                        <i class="fas fa-user-plus me-2"></i> Registrarse
+                    </a>
+                </div>
+                {% endif %}
             </div>
-        </div>
-        
-        <div class="text-center mt-4">
-            <h2 class="h3">¿Listo para compartir tus secretos?</h2>
-            <p class="mb-4">Únete a nuestra comunidad y siente la libertad de expresarte sin límites.</p>
-            
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('confessions') }}" class="btn btn-primary">Ver Confesiones</a>
-            {% else %}
-            <a href="{{ url_for('register') }}" class="btn btn-primary">Registrarse Ahora</a>
-            {% endif %}
         </div>
     </div>
 </div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="feature-card text-center p-4 rounded stagger-item fade-in">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-user-secret fa-2x"></i>
+                        </div>
+                        <h3>Anonimato Total</h3>
+                        <p>Comparte tus confesiones de forma completamente anónima. Solo se mostrará un avatar generado automáticamente.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card text-center p-4 rounded stagger-item fade-in">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-comments fa-2x"></i>
+                        </div>
+                        <h3>Interacción Social</h3>
+                        <p>Comenta en las confesiones de otros usuarios y recibe comentarios en las tuyas con total privacidad.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card text-center p-4 rounded stagger-item fade-in">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-heart fa-2x"></i>
+                        </div>
+                        <h3>Guarda Favoritos</h3>
+                        <p>Marca las confesiones que más te impacten como favoritas para encontrarlas fácilmente después.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card p-4 mb-5 shadow-lg fade-in">
+                <div class="text-center">
+                    <h2 class="h3 text-gradient">¿Qué te está pasando hoy?</h2>
+                    <p class="mb-4">Libera tus pensamientos y siente el alivio de compartir lo que llevas dentro.</p>
+                    
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('new_confession') }}" class="btn btn-primary interactive-element">
+                        <i class="fas fa-feather-alt me-2"></i> Crear Nueva Confesión
+                    </a>
+                    {% else %}
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2"></i> Para comenzar a publicar, necesitas <a href="{{ url_for('register') }}" class="alert-link">crear una cuenta</a> o <a href="{{ url_for('login') }}" class="alert-link">iniciar sesión</a>.
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="text-center mt-5 mb-5 fade-in">
+                <div class="color-wave py-4 rounded-3">
+                    <h2 class="h3 text-white">¿Listo para liberar tus secretos?</h2>
+                    <p class="text-white-50 mb-4">Únete a nuestra comunidad y siente la libertad de expresarte sin límites.</p>
+                    
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('confessions') }}" class="btn btn-light">
+                        <i class="fas fa-arrow-right me-2"></i> Ver Todas las Confesiones
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('register') }}" class="btn btn-light">
+                        <i class="fas fa-user-plus me-2"></i> Registrarse Ahora
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inicialización de las animaciones -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Activar animaciones al hacer scroll
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        fadeElements.forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(element);
+        });
+    });
+</script>
 {% endblock %}
