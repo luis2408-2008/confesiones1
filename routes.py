@@ -1,12 +1,15 @@
 from flask import render_template, flash, redirect, url_for, request, abort, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from urllib.parse import urlparse
-from datetime import datetime
+from datetime import datetime, timedelta
+import random
+import os
+import json
 
 from app import app, db
 from models import User, Confession, Comment, Favorite
 from forms import LoginForm, RegistrationForm, ConfessionForm, CommentForm, AdminUserEditForm
-from utils import update_user_activity, get_user_stats, flash_errors
+from utils import update_user_activity, get_user_stats, flash_errors, get_random_avatar_id
 
 @app.before_request
 def before_request():
@@ -75,6 +78,10 @@ def logout():
 @login_required
 def confessions():
     """List all confessions."""
+    # Check if we need to create sample confessions
+    if Confession.query.count() == 0:
+        create_sample_confessions()
+    
     page = request.args.get('page', 1, type=int)
     per_page = 10
     confessions = Confession.query.order_by(Confession.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
@@ -84,8 +91,149 @@ def confessions():
     if current_user.is_authenticated:
         user_favorites = [fav.confession_id for fav in current_user.favorites]
     
+    # Generate a random avatar ID for the user's new confession
+    random_avatar_id = get_random_avatar_id()
+    
     return render_template('confessions.html', title='Confesiones', confessions=confessions, 
-                          user_favorites=user_favorites, form=ConfessionForm())
+                          user_favorites=user_favorites, form=ConfessionForm(),
+                          random_avatar_id=random_avatar_id)
+
+def create_sample_confessions():
+    """Create sample confessions for new installations."""
+    # Sample users (other than admin)
+    sample_users = []
+    admin = User.query.filter_by(is_admin=True).first()
+    
+    if admin is None:
+        # Create admin if not exists
+        admin = User(
+            name="Administrator",
+            username="admin",
+            email="admin@confessiones.com",
+            is_admin=True
+        )
+        admin.set_password("admin1234")
+        db.session.add(admin)
+        db.session.commit()
+    
+    sample_users.append(admin)
+    
+    # Check if we need to create more sample users
+    if User.query.count() < 3:
+        # Create sample users
+        sample_usernames = ["maria_anon", "juan_secreto"]
+        sample_emails = ["maria@example.com", "juan@example.com"]
+        sample_names = ["María Anónima", "Juan Secreto"]
+        
+        for i in range(len(sample_usernames)):
+            # Check if user already exists
+            if User.query.filter_by(username=sample_usernames[i]).first() is None:
+                user = User(
+                    name=sample_names[i],
+                    username=sample_usernames[i],
+                    email=sample_emails[i]
+                )
+                user.set_password("password123")
+                user.registered_on = datetime.utcnow() - timedelta(days=random.randint(1, 30))
+                db.session.add(user)
+                sample_users.append(user)
+        
+        db.session.commit()
+    else:
+        # Get some existing users
+        sample_users.extend(User.query.filter(User.id != admin.id).limit(2).all())
+    
+    # Sample confessions content
+    sample_confessions = [
+        "Siempre he tenido miedo de hablar en público, pero nunca se lo he contado a nadie. Cada vez que tengo que presentar algo, me pasan mil cosas por la cabeza y siento que voy a colapsar. He intentado superarlo, pero el miedo sigue ahí.",
+        
+        "Estoy enamorado/a de mi mejor amigo/a desde hace años. Cada vez que salimos juntos tengo que fingir que solo es amistad, pero por dentro estoy muriendo por confesar mis sentimientos. Temo arruinar nuestra amistad si digo algo.",
+        
+        "A veces finjo estar enfermo/a para no ir a reuniones sociales. La ansiedad social me paraliza y es más fácil inventar una excusa que explicar el verdadero motivo por el que no quiero ir.",
+        
+        "Sigo revisando el perfil de mi ex en redes sociales, aunque terminamos hace más de un año. No puedo evitarlo y me siento culpable cada vez que lo hago, pero es como una adicción que no puedo controlar.",
+        
+        "Nunca he leído los libros que digo haber leído. En conversaciones sobre literatura, simplemente repito opiniones que he leído online para parecer culto/a. Me da vergüenza admitirlo, pero no disfruto leyendo como los demás.",
+        
+        "Tengo un talento oculto para dibujar, pero nunca se lo he mostrado a nadie por miedo a las críticas. Tengo cuadernos llenos de dibujos que nadie ha visto jamás.",
+        
+        "Guardo todas las notas y cartas que he recibido desde la escuela primaria. Las releo cuando me siento triste o solo/a. Es mi tesoro más preciado y me hace sentir que he significado algo para alguien en algún momento.",
+        
+        "Me encanta cantar pero tengo una voz terrible. Cuando estoy solo/a en casa, canto a todo pulmón mis canciones favoritas. Es liberador poder expresarme así, aunque nunca podría hacerlo frente a otras personas.",
+    ]
+    
+    # Create sample confessions if needed
+    if Confession.query.count() == 0:
+        for i, content in enumerate(sample_confessions):
+            # Choose a random user
+            user = random.choice(sample_users)
+            
+            # Create confession
+            confession = Confession(
+                content=content,
+                user_id=user.id,
+                avatar_id=get_random_avatar_id(),
+                created_at=datetime.utcnow() - timedelta(days=random.randint(0, 14), 
+                                                     hours=random.randint(0, 23),
+                                                     minutes=random.randint(0, 59))
+            )
+            db.session.add(confession)
+        
+        db.session.commit()
+        
+        # Add some sample comments
+        sample_comments = [
+            "Me siento igual, es reconfortante saber que no soy el único/a.",
+            "Gracias por compartir, tu confesión me ha llegado al corazón.",
+            "Deberías intentar hablar con alguien de confianza sobre esto, te ayudará.",
+            "Totalmente de acuerdo contigo, a veces es difícil expresar nuestros verdaderos sentimientos.",
+            "¡Qué valiente eres por compartir esto! Me has inspirado.",
+            "Yo pasé por algo similar y al final todo mejoró, no pierdas la esperanza.",
+            "Es increíble cómo nos escondemos detrás de máscaras sociales, ¿no?",
+            "Nunca había pensado en esto desde esta perspectiva, gracias por abrirme los ojos."
+        ]
+        
+        # Get all confession IDs
+        confession_ids = [c.id for c in Confession.query.all()]
+        
+        # Create 15-20 random comments
+        for _ in range(random.randint(15, 20)):
+            # Random confession
+            confession_id = random.choice(confession_ids)
+            # Random user
+            user = random.choice(sample_users)
+            # Random comment
+            content = random.choice(sample_comments)
+            
+            comment = Comment(
+                content=content,
+                user_id=user.id,
+                confession_id=confession_id,
+                avatar_id=get_random_avatar_id(),
+                created_at=Confession.query.get(confession_id).created_at + timedelta(hours=random.randint(1, 48))
+            )
+            db.session.add(comment)
+        
+        db.session.commit()
+        
+        # Add some favorites
+        for _ in range(random.randint(10, 15)):
+            # Random confession
+            confession_id = random.choice(confession_ids)
+            # Random user
+            user = random.choice(sample_users)
+            
+            # Check if favorite already exists
+            existing = Favorite.query.filter_by(user_id=user.id, confession_id=confession_id).first()
+            if not existing:
+                favorite = Favorite(
+                    user_id=user.id,
+                    confession_id=confession_id,
+                    created_at=datetime.utcnow() - timedelta(days=random.randint(0, 7))
+                )
+                db.session.add(favorite)
+        
+        db.session.commit()
 
 @app.route('/confessions/new', methods=['POST'])
 @login_required
@@ -93,9 +241,13 @@ def new_confession():
     """Create a new confession."""
     form = ConfessionForm()
     if form.validate_on_submit():
+        # Generate a random avatar ID between 1 and 8
+        avatar_id = get_random_avatar_id()
+        
         confession = Confession(
             content=form.content.data,
-            user_id=current_user.id
+            user_id=current_user.id,
+            avatar_id=avatar_id
         )
         db.session.add(confession)
         db.session.commit()
@@ -130,10 +282,14 @@ def add_comment(id):
     form = CommentForm()
     
     if form.validate_on_submit():
+        # Generate a random avatar ID between 1 and 8
+        avatar_id = get_random_avatar_id()
+        
         comment = Comment(
             content=form.content.data,
             user_id=current_user.id,
-            confession_id=id
+            confession_id=id,
+            avatar_id=avatar_id
         )
         db.session.add(comment)
         db.session.commit()

@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect width="100" height="100" fill="#560bad" />
-    <polygon points="0,0 50,40 0,80" fill="#f72585" opacity="0.35" />
-    <polygon points="100,0 50,60 100,100" fill="#4cc9f0" opacity="0.4" />
-    <polygon points="0,100 30,50 60,100" fill="#9d4edd" opacity="0.3" />
+  <rect width="100" height="100" fill="#560bad" />
+  <polygon points="20,20 80,30 50,80" fill="#48bfe3" opacity="0.3" />
+  <polygon points="80,10 90,70 30,50" fill="#f72585" opacity="0.4" />
+  <polygon points="10,70 40,40 25,90" fill="#7b2cbf" opacity="0.5" />
 </svg>
