@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Confesión - Confesiones Anónimas{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2">Nueva Confesión</h1>
+            <a href="{{ url_for('confessions') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-gradient-primary text-white">
+                <h2 class="h5 mb-0">Comparte tu confesión anónima</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('new_confession') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="confessionText" class="form-label">Tu confesión</label>
+                        {{ form.content(class="form-control", rows="8", id="confessionText",
+                              placeholder="Escribe aquí tu confesión...", maxlength="1000", required=true) }}
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">Comparte lo que tengas en mente. Todas las confesiones son anónimas.</small>
+                            <small id="characterCount" class="text-muted">0/1000 caracteres</small>
+                        </div>
+                        {% for error in form.content.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-center">
+                        <div class="avatar-preview mb-3">
+                            <p class="text-center mb-2">Tu avatar para esta confesión:</p>
+                            <img src="{{ url_for('static', filename='img/avatars/' + range(1, 9)|random|string + '.svg') }}" 
+                                 alt="Tu avatar" class="avatar-img mx-auto d-block" style="width: 60px; height: 60px;">
+                            <p class="text-center text-muted mt-2"><small>Se asignará automáticamente un avatar a tu confesión</small></p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg pulse-glow", value="Publicar Confesión") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card bg-light border-0 shadow-sm">
+            <div class="card-body">
+                <h3 class="h5"><i class="fas fa-shield-alt me-2 text-primary"></i>Tu privacidad está garantizada</h3>
+                <p class="text-muted mb-0">Tu confesión será publicada de forma completamente anónima. Solo tú sabrás que la has publicado. Todos los usuarios pueden ver las confesiones pero no quién las ha escrito.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Contador de caracteres
+        const textarea = document.getElementById('confessionText');
+        const charCounter = document.getElementById('characterCount');
+        
+        textarea.addEventListener('input', function() {
+            const length = this.value.length;
+            charCounter.textContent = `${length}/1000 caracteres`;
+            
+            // Cambiar color según la cantidad de caracteres
+            if (length > 800) {
+                charCounter.classList.remove('text-muted');
+                charCounter.classList.add('text-warning');
+            } else {
+                charCounter.classList.remove('text-warning', 'text-danger');
+                charCounter.classList.add('text-muted');
+            }
+            
+            if (length > 950) {
+                charCounter.classList.remove('text-warning');
+                charCounter.classList.add('text-danger');
+            }
+        });
+    });
+</script>
+{% endblock %}

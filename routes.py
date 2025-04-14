@@ -235,11 +235,17 @@ def create_sample_confessions():
         
         db.session.commit()
 
-@app.route('/confessions/new', methods=['POST'])
+@app.route('/confessions/new', methods=['GET', 'POST'])
 @login_required
 def new_confession():
     """Create a new confession."""
     form = ConfessionForm()
+    
+    # Si es una solicitud GET, renderiza la página de nueva confesión
+    if request.method == 'GET':
+        return render_template('new_confession.html', title='Nueva Confesión', form=form)
+    
+    # Si es una solicitud POST, procesa el formulario
     if form.validate_on_submit():
         # Generate a random avatar ID between 1 and 8
         avatar_id = get_random_avatar_id()

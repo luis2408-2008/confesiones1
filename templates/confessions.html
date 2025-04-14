@@ -248,29 +248,17 @@
                 <h2 class="h5 mb-0"><i class="fas fa-feather-alt me-2"></i> Escribe tu Confesión</h2>
             </div>
             <div class="card-body p-4">
-                <form method="POST" action="{{ url_for('new_confession') }}" id="confessionForm">
-                    {{ form.hidden_tag() }}
-                    
-                    <div class="mb-3">
-                        {{ form.content(class="form-control confession-textarea", rows="5", placeholder="Escribe aquí tu confesión anónima...", id="confessionText") }}
-                        {% for error in form.content.errors %}
-                        <div class="text-danger mt-2 small">
-                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
-                        </div>
-                        {% endfor %}
-                        <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted" id="characterCount">0/1000 caracteres</small>
-                            <div class="avatar-container">
-                                <img src="{{ url_for('static', filename='img/avatars/' ~ random_avatar_id ~ '.svg') }}" 
-                                     alt="Tu avatar" width="32" height="32" class="avatar-img-sm">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-grid">
-                        {{ form.submit(class="btn btn-primary post-confession-btn") }}
-                    </div>
-                </form>
+                <p class="mb-3">Comparte tu confesión anónima con la comunidad. Tu identidad permanecerá oculta, pero tus palabras pueden resonar con otros.</p>
+                
+                <div class="mb-2">
+                    <a href="{{ url_for('new_confession') }}" class="btn btn-primary post-confession-btn w-100">
+                        <i class="fas fa-plus-circle me-2"></i> Nueva Confesión
+                    </a>
+                </div>
+                
+                <p class="text-center text-muted small mt-3">
+                    <i class="fas fa-lock me-1"></i> Tus confesiones son completamente anónimas
+                </p>
             </div>
         </div>
     </div>
@@ -413,7 +401,7 @@
                     <i class="fas fa-feather-alt pulse-icon"></i>
                     <h3>No hay confesiones aún</h3>
                     <p class="text-muted mb-4">¡Sé el primero en compartir tus pensamientos anónimos!</p>
-                    <a href="#confessionForm" class="btn btn-primary btn-lg">
+                    <a href="{{ url_for('new_confession') }}" class="btn btn-primary btn-lg">
                         <i class="fas fa-pen me-2"></i> Escribe una confesión
                     </a>
                 </div>
